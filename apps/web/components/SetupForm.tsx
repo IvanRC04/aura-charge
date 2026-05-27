@@ -32,10 +32,10 @@ export function SetupForm({ chargerCode, chargerName, chargerLocation, chargerMa
   const [searching, setSearching] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSearch, setShowSearch] = useState(false);
 
   async function applyPosition(lat: number, lng: number) {
     setPos({ lat, lng });
-    // Best-effort reverse geocode
     const mod = await import("./MapPicker");
     const addr = await mod.reverseGeocode(lat, lng);
     if (addr) setAddress(addr);
@@ -69,11 +69,12 @@ export function SetupForm({ chargerCode, chargerName, chargerLocation, chargerMa
     const r = await mod.searchAddress(address);
     setSearching(false);
     if (!r) {
-      setError("No hemos encontrado esa dirección. Prueba a hacer click directamente en el mapa.");
+      setError("Dirección no encontrada. Prueba a hacer click en el mapa.");
       return;
     }
     setPos({ lat: r.lat, lng: r.lng });
     setAddress(r.address);
+    setShowSearch(false);
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -98,14 +99,14 @@ export function SetupForm({ chargerCode, chargerName, chargerLocation, chargerMa
         }),
       });
       if (!res.ok) {
-        setError("Algo ha ido mal creando la sesión. Inténtalo de nuevo.");
+        setError("Error creando la sesión. Inténtalo de nuevo.");
         setSubmitting(false);
         return;
       }
       const data = (await res.json()) as { sessionId: string };
       router.push(`/charge/${data.sessionId}`);
     } catch {
-      setError("Sin conexión al servidor. Inténtalo de nuevo en unos segundos.");
+      setError("Sin conexión. Inténtalo de nuevo.");
       setSubmitting(false);
     }
   }
@@ -113,73 +114,49 @@ export function SetupForm({ chargerCode, chargerName, chargerLocation, chargerMa
   const canSubmit = name.trim().length >= 2 && !submitting;
 
   return (
-    <form onSubmit={onSubmit} className="mx-auto max-w-[1100px] px-6 py-8">
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <div className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
-            Estación {chargerCode} · {chargerLocation}
+    <form
+      onSubmit={onSubmit}
+      className="mx-auto flex h-[calc(100dvh-64px)] max-w-[1100px] flex-col px-4 py-3 md:h-auto md:px-6 md:py-8"
+    >
+      {/* Header */}
+      <div className="mb-2 flex shrink-0 flex-wrap items-end justify-between gap-2 md:mb-6 md:gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-[10px] uppercase tracking-[0.16em] text-[var(--color-fg-muted)]">
+            {chargerCode} · {chargerLocation}
           </div>
-          <h1 className="mt-0.5 text-3xl font-semibold tracking-tight md:text-4xl">
-            Antes de empezar tu carga
+          <h1 className="mt-0.5 text-xl font-semibold tracking-tight md:text-3xl">
+            Configura tu carga
           </h1>
-          <p className="mt-1 max-w-xl text-sm text-[var(--color-fg-muted)]">
-            Cuéntanos quién eres y dónde sueles cargar. Así podemos personalizar tu sesión y
-            ofrecerte tarifas y rutas adaptadas a ti.
-          </p>
         </div>
-        <Badge tone="accent" dot>
-          {chargerMaxKw} kW · {chargerName}
+        <Badge tone="accent" dot className="shrink-0 text-[9px] md:text-[11px]">
+          {chargerMaxKw} kW
         </Badge>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-12">
-        {/* Left column: name + vehicle */}
-        <div className="md:col-span-5 space-y-4">
+      {/* Desktop layout */}
+      <div className="hidden flex-1 grid-cols-12 gap-5 md:grid">
+        <div className="col-span-5 space-y-4">
           <Card raised className="p-5">
-            <Label step={1}>¿Cómo te llamas?</Label>
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Tu nombre y apellidos"
-              autoComplete="name"
-              className="mt-2 h-11 w-full rounded-[10px] hairline-strong bg-[var(--color-bg)] px-4 text-sm outline-none placeholder:text-[var(--color-fg-muted)] focus:border-[var(--color-accent)]"
-            />
+            <FieldLabel step={1}>¿Cómo te llamas?</FieldLabel>
+            <NameInput value={name} onChange={setName} />
           </Card>
-
           <Card raised className="p-5">
-            <Label step={2}>¿Qué coche conduces?</Label>
-            <select
-              value={vehicleModel}
-              onChange={(e) => setVehicleModel(e.target.value)}
-              className="mt-2 h-11 w-full appearance-none rounded-[10px] hairline-strong bg-[var(--color-bg)] px-4 text-sm outline-none focus:border-[var(--color-accent)]"
-            >
-              {VEHICLE_FLEET.map((v) => (
-                <option key={v.model} value={v.model}>
-                  {v.model} · {v.batteryKwh} kWh · hasta {v.maxAcceptKw} kW
-                </option>
-              ))}
-            </select>
+            <FieldLabel step={2}>¿Qué coche conduces?</FieldLabel>
+            <VehicleSelect value={vehicleModel} onChange={setVehicleModel} />
             <p className="mt-2 text-[11px] text-[var(--color-fg-muted)]">
               Detectamos la curva de carga y la potencia óptima según tu modelo.
             </p>
           </Card>
         </div>
-
-        {/* Right column: map */}
-        <div className="md:col-span-7">
-          <Card raised className="overflow-hidden p-0">
+        <div className="col-span-7">
+          <Card raised className="flex h-full flex-col overflow-hidden p-0">
             <div className="border-b border-[var(--color-line)] px-5 py-4">
-              <Label step={3}>¿Dónde tienes el coche habitualmente?</Label>
+              <FieldLabel step={3}>¿Dónde tienes el coche?</FieldLabel>
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <input
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      searchByAddress();
-                    }
-                  }}
+                  onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), searchByAddress())}
                   placeholder="Tu calle, ciudad, código postal…"
                   className="h-10 flex-1 rounded-[10px] hairline-strong bg-[var(--color-bg)] px-3 text-sm outline-none placeholder:text-[var(--color-fg-muted)] focus:border-[var(--color-accent)]"
                 />
@@ -197,57 +174,97 @@ export function SetupForm({ chargerCode, chargerName, chargerLocation, chargerMa
                   disabled={searching}
                   className="h-10 rounded-[10px] bg-[var(--color-fg)] px-3 text-xs font-medium uppercase tracking-[0.1em] text-[var(--color-bg)] transition disabled:opacity-50"
                 >
-                  Usar mi ubicación
+                  Mi ubicación
                 </button>
               </div>
-              <p className="mt-2 text-[11px] text-[var(--color-fg-muted)]">
-                Haz click en el mapa o arrastra el marcador para afinar tu casa exactamente.
-              </p>
             </div>
-            <div className="relative h-[360px] w-full md:h-[420px]">
+            <div className="relative min-h-[380px] flex-1">
               <MapPicker value={pos} onChange={applyPosition} />
-              {!pos && (
-                <div className="pointer-events-none absolute inset-0 grid place-items-center bg-[var(--color-bg)]/40 text-center text-sm text-[var(--color-fg-muted)]">
-                  <div className="rounded-[10px] bg-[var(--color-surface-raised)] px-4 py-2 shadow">
-                    Selecciona tu ubicación en el mapa
-                  </div>
-                </div>
-              )}
             </div>
-            {pos && (
-              <div className="border-t border-[var(--color-line)] px-5 py-3 text-xs">
-                <div className="text-[10px] uppercase tracking-[0.14em] text-[var(--color-fg-muted)]">
-                  Ubicación seleccionada
-                </div>
-                <div className="mt-0.5 text-[var(--color-fg)]">
-                  {address || "Buscando dirección…"}
-                </div>
-                <div className="mt-0.5 tabular text-[10px] text-[var(--color-fg-muted)]">
-                  {pos.lat.toFixed(5)}, {pos.lng.toFixed(5)}
-                </div>
-              </div>
-            )}
           </Card>
         </div>
       </div>
 
+      {/* Mobile layout: compact stack, map fills remaining */}
+      <div className="flex min-h-0 flex-1 flex-col gap-2 md:hidden">
+        <div className="shrink-0 grid grid-cols-1 gap-2">
+          <NameInput value={name} onChange={setName} compact />
+          <VehicleSelect value={vehicleModel} onChange={setVehicleModel} compact />
+        </div>
+        <div className="relative min-h-0 flex-1 overflow-hidden rounded-[12px] hairline">
+          <MapPicker value={pos} onChange={applyPosition} />
+          {/* Floating control */}
+          {!showSearch ? (
+            <div className="pointer-events-none absolute inset-x-2 top-2 flex justify-between">
+              <button
+                type="button"
+                onClick={() => setShowSearch(true)}
+                className="pointer-events-auto rounded-full bg-[var(--color-surface-raised)] px-3 py-1.5 text-[11px] font-medium shadow hairline-strong"
+              >
+                Buscar dirección
+              </button>
+              <button
+                type="button"
+                onClick={locateMe}
+                disabled={searching}
+                className="pointer-events-auto rounded-full bg-[var(--color-fg)] px-3 py-1.5 text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--color-bg)] shadow disabled:opacity-50"
+              >
+                Mi ubicación
+              </button>
+            </div>
+          ) : (
+            <div className="absolute inset-x-2 top-2 flex gap-1.5">
+              <input
+                autoFocus
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), searchByAddress())}
+                placeholder="Calle, ciudad, CP…"
+                className="h-9 flex-1 rounded-full bg-[var(--color-surface-raised)] px-3 text-[13px] outline-none shadow hairline-strong placeholder:text-[var(--color-fg-muted)]"
+              />
+              <button
+                type="button"
+                onClick={searchByAddress}
+                disabled={searching || !address.trim()}
+                className="h-9 shrink-0 rounded-full bg-[var(--color-fg)] px-3 text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--color-bg)] shadow disabled:opacity-50"
+              >
+                Ir
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowSearch(false)}
+                aria-label="Cerrar búsqueda"
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[var(--color-surface-raised)] text-[var(--color-fg)] shadow hairline-strong"
+              >
+                ×
+              </button>
+            </div>
+          )}
+          {pos && address && (
+            <div className="absolute inset-x-2 bottom-2 truncate rounded-[8px] bg-[var(--color-surface-raised)] px-2.5 py-1.5 text-[11px] shadow hairline-strong">
+              {address}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Submit row */}
       {error && (
-        <div className="mt-4 rounded-[10px] border border-[var(--color-danger)] bg-[var(--color-bg)] px-4 py-2.5 text-sm text-[var(--color-danger)]">
+        <div className="mt-2 rounded-[8px] border border-[var(--color-danger)] bg-[var(--color-bg)] px-3 py-1.5 text-[12px] text-[var(--color-danger)] md:mt-4 md:rounded-[10px] md:px-4 md:py-2.5 md:text-sm">
           {error}
         </div>
       )}
-
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+      <div className="mt-2 flex shrink-0 items-center justify-between gap-2 md:mt-6">
         <Link
           href={`/charge/start?c=${chargerCode}`}
-          className="text-xs text-[var(--color-fg-muted)] underline underline-offset-2"
+          className="text-[11px] text-[var(--color-fg-muted)] underline underline-offset-2 md:text-xs"
         >
-          Saltar y usar datos aleatorios
+          Saltar
         </Link>
         <button
           type="submit"
           disabled={!canSubmit}
-          className="h-12 rounded-[12px] bg-[var(--color-fg)] px-6 text-sm font-semibold text-[var(--color-bg)] transition disabled:opacity-50"
+          className="h-11 flex-1 max-w-[280px] rounded-[12px] bg-[var(--color-fg)] px-5 text-sm font-semibold text-[var(--color-bg)] transition disabled:opacity-50 md:h-12"
         >
           {submitting ? "Iniciando…" : "Empezar a cargar →"}
         </button>
@@ -256,7 +273,7 @@ export function SetupForm({ chargerCode, chargerName, chargerLocation, chargerMa
   );
 }
 
-function Label({ step, children }: { step: number; children: React.ReactNode }) {
+function FieldLabel({ step, children }: { step: number; children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2">
       <span className="grid h-6 w-6 place-items-center rounded-full bg-[var(--color-accent)] text-[11px] font-semibold text-[var(--color-bg)]">
@@ -264,5 +281,53 @@ function Label({ step, children }: { step: number; children: React.ReactNode }) 
       </span>
       <span className="text-sm font-medium uppercase tracking-[0.08em]">{children}</span>
     </div>
+  );
+}
+
+function NameInput({
+  value,
+  onChange,
+  compact,
+}: {
+  value: string;
+  onChange: (s: string) => void;
+  compact?: boolean;
+}) {
+  return (
+    <input
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder="Tu nombre"
+      autoComplete="name"
+      className={`w-full rounded-[10px] hairline-strong bg-[var(--color-bg)] px-3 text-sm outline-none placeholder:text-[var(--color-fg-muted)] focus:border-[var(--color-accent)] ${
+        compact ? "h-10" : "mt-2 h-11 px-4"
+      }`}
+    />
+  );
+}
+
+function VehicleSelect({
+  value,
+  onChange,
+  compact,
+}: {
+  value: string;
+  onChange: (s: string) => void;
+  compact?: boolean;
+}) {
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className={`w-full appearance-none rounded-[10px] hairline-strong bg-[var(--color-bg)] px-3 text-sm outline-none focus:border-[var(--color-accent)] ${
+        compact ? "h-10" : "mt-2 h-11 px-4"
+      }`}
+    >
+      {VEHICLE_FLEET.map((v) => (
+        <option key={v.model} value={v.model}>
+          {v.model} · {v.batteryKwh} kWh
+        </option>
+      ))}
+    </select>
   );
 }
