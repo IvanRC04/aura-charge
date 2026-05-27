@@ -48,6 +48,9 @@ export const customers = pgTable("customers", {
   plate: text("plate"),
   vehicleModel: text("vehicle_model").notNull(),
   batteryKwh: integer("battery_kwh").notNull(),
+  address: text("address"),
+  lat: numeric("lat", { precision: 9, scale: 6 }),
+  lng: numeric("lng", { precision: 9, scale: 6 }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

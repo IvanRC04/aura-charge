@@ -1,5 +1,42 @@
 @import "@aura/ui/globals.css";
+@import "leaflet/dist/leaflet.css";
 
 @source "../../../packages/ui/src";
 @source "../app";
 @source "../components";
+
+/* Leaflet overrides to match AURA palette */
+.leaflet-container {
+  background: var(--color-surface);
+  font-family: var(--font-sans);
+}
+.leaflet-control-attribution {
+  background: rgba(247, 242, 231, 0.75) !important;
+  color: var(--color-fg-muted) !important;
+  font-size: 10px !important;
+}
+.leaflet-control-attribution a {
+  color: var(--color-fg) !important;
+}
+.leaflet-bar a {
+  background: var(--color-surface-raised) !important;
+  color: var(--color-fg) !important;
+  border-color: var(--color-line-strong) !important;
+}
+.aura-marker {
+  display: grid;
+  place-items: center;
+  background: var(--color-fg);
+  color: var(--color-bg);
+  width: 32px;
+  height: 32px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: 2px solid var(--color-bg);
+  box-shadow: 0 4px 12px rgba(90, 94, 65, 0.35);
+}
+.aura-marker > * {
+  transform: rotate(45deg);
+  font-size: 14px;
+  font-weight: 700;
+}

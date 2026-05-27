@@ -34,7 +34,7 @@ async function resolveBaseUrl(): Promise<string> {
 
 export async function QrPanel() {
   const base = await resolveBaseUrl();
-  const target = `${base}/charge/start?c=AURA-007`;
+  const target = `${base}/charge/setup?c=AURA-007`;
   const dataUrl = await getQrDataUrl(target);
   return (
     <div className="flex h-full flex-col rounded-[20px] hairline-strong bg-[var(--color-surface-raised)] p-5">
@@ -57,7 +57,7 @@ export async function QrPanel() {
         </div>
       </div>
       <a
-        href="/charge/start?c=AURA-007"
+        href="/charge/setup?c=AURA-007"
         className="mt-4 block w-full rounded-[12px] bg-[var(--color-fg)] py-2.5 text-center text-sm font-medium text-[var(--color-bg)] transition hover:opacity-90"
       >
         O abre la simulación ahora →

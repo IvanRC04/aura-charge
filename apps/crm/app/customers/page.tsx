@@ -37,7 +37,7 @@ export default async function CustomersPage() {
               <tr className="text-left text-[10px] uppercase tracking-[0.14em] text-[var(--color-fg-muted)]">
                 <th className="px-4 py-3">Cliente</th>
                 <th className="px-4 py-3">Vehículo</th>
-                <th className="px-4 py-3">Matrícula</th>
+                <th className="px-4 py-3">Ubicación</th>
                 <th className="px-4 py-3 text-right">Sesiones</th>
                 <th className="px-4 py-3 text-right">kWh totales</th>
                 <th className="px-4 py-3 text-right">Gasto</th>
@@ -57,8 +57,19 @@ export default async function CustomersPage() {
                       {customer.batteryKwh} kWh
                     </div>
                   </td>
-                  <td className="px-4 py-3 font-mono text-[12px] tracking-wider">
-                    {customer.plate ?? "-"}
+                  <td className="px-4 py-3 max-w-[280px]">
+                    {customer.address ? (
+                      <div>
+                        <div className="truncate text-[12px] text-[var(--color-fg)]">{customer.address}</div>
+                        {customer.lat && customer.lng && (
+                          <div className="tabular text-[10px] text-[var(--color-fg-muted)]">
+                            {Number(customer.lat).toFixed(4)}, {Number(customer.lng).toFixed(4)}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-[var(--color-fg-muted)]">—</span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-right tabular">{sessions}</td>
                   <td className="px-4 py-3 text-right tabular">
