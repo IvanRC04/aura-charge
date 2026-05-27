@@ -97,14 +97,12 @@ export function FloatingChat({ sessionId, snapshotHint }: Props) {
                 </button>
               </header>
 
-              <div className="flex-1 overflow-hidden p-3 md:p-5">
-                <div className="h-full">
-                  <ChatAgent
-                    sessionId={sessionId}
-                    snapshotHint={snapshotHint}
-                    fullHeight
-                  />
-                </div>
+              <div className="flex min-h-0 flex-1 overflow-hidden p-3 md:p-5">
+                <ChatAgent
+                  sessionId={sessionId}
+                  snapshotHint={snapshotHint}
+                  fullHeight
+                />
               </div>
             </motion.div>
           </motion.div>

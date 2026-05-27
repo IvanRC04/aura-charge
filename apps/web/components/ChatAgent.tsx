@@ -2,6 +2,8 @@
 
 import { useChat } from "ai/react";
 import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Card } from "@aura/ui";
 import type { SessionSnapshot } from "@/lib/derive-state";
 
@@ -40,11 +42,12 @@ export function ChatAgent({
   return (
     <Card
       raised
-      className={`grid grid-cols-1 gap-0 overflow-hidden p-0 md:grid-cols-12 ${
-        fullHeight ? "h-full" : ""
+      className={`flex w-full flex-col overflow-hidden p-0 md:flex-row ${
+        fullHeight ? "h-full min-h-0" : ""
       }`}
     >
-      <aside className="md:col-span-4 border-b border-[var(--color-line)] bg-[var(--color-surface)] p-5 md:border-b-0 md:border-r">
+      {/* Sidebar */}
+      <aside className="shrink-0 border-b border-[var(--color-line)] bg-[var(--color-surface)] p-5 md:w-[260px] md:border-b-0 md:border-r lg:w-[300px]">
         <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-fg-muted)]">
           Contexto de la sesión
         </h3>
@@ -56,23 +59,25 @@ export function ChatAgent({
           <ContextRow label="Energía" value={`${snapshotHint.current.kwhDelivered.toFixed(2)} kWh`} />
           <ContextRow label="Objetivo" value={`${snapshotHint.params.targetSocPct}%`} />
         </ul>
-        <p className="mt-5 text-xs text-[var(--color-fg-muted)]">
-          AURA conoce el estado de tu carga al instante. Pregúntale dudas técnicas, tarifas, autonomía recuperada, etc.
+        <p className="mt-5 hidden text-xs text-[var(--color-fg-muted)] md:block">
+          AURA conoce el estado de tu carga al instante. Pregúntale dudas técnicas, tarifas,
+          autonomía recuperada, etc.
         </p>
       </aside>
 
-      <div className="flex flex-col md:col-span-8">
+      {/* Chat column */}
+      <div className="flex min-h-0 flex-1 flex-col">
         <div
           ref={scrollRef}
           className={`flex-1 space-y-3 overflow-y-auto p-5 ${
-            fullHeight ? "min-h-0" : "min-h-[280px]"
+            fullHeight ? "min-h-0" : "min-h-[280px] max-h-[460px]"
           }`}
-          style={fullHeight ? undefined : { maxHeight: 460 }}
         >
           {showSuggestions && (
             <div>
               <p className="text-sm text-[var(--color-fg-muted)]">
-                Hola, soy <strong className="text-[var(--color-fg)]">AURA</strong>. Estoy monitorizando tu carga en tiempo real. ¿En qué puedo ayudarte?
+                Hola, soy <strong className="text-[var(--color-fg)]">AURA</strong>. Estoy
+                monitorizando tu carga en tiempo real. ¿En qué puedo ayudarte?
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {SUGGESTIONS.map((s) => (
@@ -92,16 +97,7 @@ export function ChatAgent({
           )}
 
           {messages.map((m) => (
-            <div
-              key={m.id}
-              className={
-                m.role === "user"
-                  ? "ml-auto max-w-[85%] rounded-[14px] bg-[var(--color-fg)] px-4 py-2.5 text-[15px] text-[var(--color-bg)]"
-                  : "mr-auto max-w-[85%] rounded-[14px] hairline-strong bg-[var(--color-surface)] px-4 py-2.5 text-[15px]"
-              }
-            >
-              <div className="whitespace-pre-wrap leading-relaxed">{m.content}</div>
-            </div>
+            <MessageBubble key={m.id} role={m.role} content={m.content} />
           ))}
 
           {isLoading && (
@@ -125,7 +121,7 @@ export function ChatAgent({
             setTouched(true);
             handleSubmit(e);
           }}
-          className="flex items-center gap-3 border-t border-[var(--color-line)] p-4"
+          className="flex shrink-0 items-center gap-3 border-t border-[var(--color-line)] p-4"
         >
           <input
             value={input}
@@ -147,9 +143,61 @@ export function ChatAgent({
   );
 }
 
+function MessageBubble({ role, content }: { role: string; content: string }) {
+  if (role === "user") {
+    return (
+      <div className="ml-auto max-w-[85%] rounded-[14px] bg-[var(--color-fg)] px-4 py-2.5 text-[15px] text-[var(--color-bg)]">
+        <div className="whitespace-pre-wrap leading-relaxed">{content}</div>
+      </div>
+    );
+  }
+  return (
+    <div className="mr-auto max-w-[85%] rounded-[14px] hairline-strong bg-[var(--color-surface)] px-4 py-2.5 text-[15px]">
+      <div className="prose-aura">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            p: ({ children }) => <p className="my-1.5 leading-relaxed first:mt-0 last:mb-0">{children}</p>,
+            strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+            em: ({ children }) => <em className="italic">{children}</em>,
+            ul: ({ children }) => <ul className="my-2 list-disc space-y-1 pl-5">{children}</ul>,
+            ol: ({ children }) => <ol className="my-2 list-decimal space-y-1 pl-5">{children}</ol>,
+            li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+            code: ({ children }) => (
+              <code className="rounded bg-[var(--color-bg)] px-1 py-0.5 font-mono text-[13px]">
+                {children}
+              </code>
+            ),
+            pre: ({ children }) => (
+              <pre className="my-2 overflow-x-auto rounded-[8px] bg-[var(--color-bg)] p-3 text-[13px]">
+                {children}
+              </pre>
+            ),
+            a: ({ children, href }) => (
+              <a
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[var(--color-accent)] underline underline-offset-2"
+              >
+                {children}
+              </a>
+            ),
+            h1: ({ children }) => <h3 className="mt-3 mb-1 text-base font-semibold">{children}</h3>,
+            h2: ({ children }) => <h3 className="mt-3 mb-1 text-base font-semibold">{children}</h3>,
+            h3: ({ children }) => <h3 className="mt-3 mb-1 text-base font-semibold">{children}</h3>,
+          }}
+        >
+          {content}
+        </ReactMarkdown>
+      </div>
+    </div>
+  );
+}
+
 function ContextRow({ label, value }: { label: string; value: string }) {
   return (
-    <li className="flex items-center justify-between">
+    <li className="flex items-center justify-between gap-3">
       <span className="text-[11px] uppercase tracking-[0.14em] text-[var(--color-fg-muted)]">
         {label}
       </span>
