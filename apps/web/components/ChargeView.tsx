@@ -6,7 +6,7 @@ import { ChargeHero } from "./ChargeHero";
 import { PowerCurveChart } from "./PowerCurveChart";
 import { SocCurveChart } from "./SocCurveChart";
 import { SessionStats } from "./SessionStats";
-import { ChatAgent } from "./ChatAgent";
+import { FloatingChat } from "./FloatingChat";
 import { Badge, Card, CardHeader } from "@aura/ui";
 
 export function ChargeView({ initial }: { initial: SessionSnapshot }) {
@@ -92,26 +92,7 @@ export function ChargeView({ initial }: { initial: SessionSnapshot }) {
         </div>
       </section>
 
-      <section id="asistente" className="hairline-strong border-x-0">
-        <div className="mx-auto max-w-[1200px] px-6 py-10 md:py-14">
-          <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <div className="text-[11px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
-                AURA · Asistente IA
-              </div>
-              <h2 className="mt-1 text-2xl font-semibold md:text-4xl">
-                Pregúntame sobre tu carga
-              </h2>
-              <p className="mt-1 max-w-2xl text-sm text-[var(--color-fg-muted)]">
-                Conozco el estado en vivo de tu sesión: SoC, potencia, tiempo, coste y curva de carga.
-                Estoy aquí para resolver dudas sobre el suministro y tu vehículo.
-              </p>
-            </div>
-            <Badge tone="accent" dot>Contexto en vivo</Badge>
-          </div>
-          <ChatAgent sessionId={snap.params.sessionId} snapshotHint={snap} />
-        </div>
-      </section>
+      <FloatingChat sessionId={snap.params.sessionId} snapshotHint={snap} />
     </main>
   );
 }

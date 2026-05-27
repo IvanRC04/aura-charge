@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { db } from "./client";
 import { chargers, customers, events, sessions, telemetry, visits } from "./schema";
 import {

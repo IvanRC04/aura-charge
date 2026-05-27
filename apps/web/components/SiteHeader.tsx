@@ -14,17 +14,6 @@ export function SiteHeader() {
             </div>
           </div>
         </Link>
-        <nav className="hidden items-center gap-6 text-sm md:flex">
-          <a href="#carga" className="text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]">
-            Tu carga
-          </a>
-          <a href="#asistente" className="text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]">
-            Asistente IA
-          </a>
-          <a href="#red" className="text-[var(--color-fg-muted)] hover:text-[var(--color-fg)]">
-            Red AURA
-          </a>
-        </nav>
         <Badge tone="positive" dot>Live</Badge>
       </div>
     </header>

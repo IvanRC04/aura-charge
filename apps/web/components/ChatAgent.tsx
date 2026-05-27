@@ -16,9 +16,11 @@ const SUGGESTIONS = [
 export function ChatAgent({
   sessionId,
   snapshotHint,
+  fullHeight = false,
 }: {
   sessionId: string;
   snapshotHint: SessionSnapshot;
+  fullHeight?: boolean;
 }) {
   const { messages, input, handleInputChange, handleSubmit, isLoading, append, error } = useChat({
     api: "/api/chat",
@@ -36,7 +38,12 @@ export function ChatAgent({
   const showSuggestions = messages.length === 0 && !touched;
 
   return (
-    <Card raised className="grid grid-cols-1 gap-0 overflow-hidden p-0 md:grid-cols-12">
+    <Card
+      raised
+      className={`grid grid-cols-1 gap-0 overflow-hidden p-0 md:grid-cols-12 ${
+        fullHeight ? "h-full" : ""
+      }`}
+    >
       <aside className="md:col-span-4 border-b border-[var(--color-line)] bg-[var(--color-surface)] p-5 md:border-b-0 md:border-r">
         <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-fg-muted)]">
           Contexto de la sesión
@@ -57,8 +64,10 @@ export function ChatAgent({
       <div className="flex flex-col md:col-span-8">
         <div
           ref={scrollRef}
-          className="min-h-[280px] flex-1 space-y-3 overflow-y-auto p-5"
-          style={{ maxHeight: 460 }}
+          className={`flex-1 space-y-3 overflow-y-auto p-5 ${
+            fullHeight ? "min-h-0" : "min-h-[280px]"
+          }`}
+          style={fullHeight ? undefined : { maxHeight: 460 }}
         >
           {showSuggestions && (
             <div>

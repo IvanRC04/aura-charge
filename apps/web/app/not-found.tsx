@@ -2,19 +2,29 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="grid min-h-screen place-items-center px-6">
-      <div className="text-center">
-        <div className="text-[11px] uppercase tracking-[0.2em] text-[var(--color-fg-muted)]">
+    <div style={{ display: "grid", placeItems: "center", minHeight: "100vh", padding: "0 1.5rem" }}>
+      <div style={{ textAlign: "center" }}>
+        <div style={{ fontSize: 11, letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(90,94,65,0.7)" }}>
           AURA Charge · 404
         </div>
-        <h1 className="mt-2 text-5xl font-semibold">Sesión no encontrada</h1>
-        <p className="mt-4 max-w-md text-[var(--color-fg-muted)]">
-          Esta sesión no existe o ha caducado. Vuelve a escanear el QR del cargador para empezar
-          una nueva.
+        <h1 style={{ marginTop: 8, fontSize: 48, fontWeight: 600 }}>Sesión no encontrada</h1>
+        <p style={{ marginTop: 16, maxWidth: 420, color: "rgba(90,94,65,0.7)" }}>
+          Esta sesión no existe o ha caducado. Vuelve a escanear el QR del cargador para empezar una
+          nueva.
         </p>
         <Link
           href="/"
-          className="mt-8 inline-flex rounded-[10px] bg-[var(--color-fg)] px-5 py-3 text-sm font-medium text-[var(--color-bg)]"
+          style={{
+            marginTop: 32,
+            display: "inline-flex",
+            background: "#5a5e41",
+            color: "#f2ecdf",
+            padding: "12px 20px",
+            borderRadius: 10,
+            fontSize: 14,
+            fontWeight: 500,
+            textDecoration: "none",
+          }}
         >
           Volver al inicio
         </Link>

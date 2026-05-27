@@ -4,16 +4,18 @@
   "private": true,
   "packageManager": "pnpm@10.18.3",
   "scripts": {
-    "dev": "turbo run dev --parallel",
-    "dev:web": "turbo run dev --filter=web",
-    "dev:crm": "turbo run dev --filter=crm",
+    "sync-env": "node scripts/sync-env.mjs",
+    "dev": "pnpm sync-env && turbo run dev --parallel",
+    "dev:web": "pnpm sync-env && turbo run dev --filter=web",
+    "dev:crm": "pnpm sync-env && turbo run dev --filter=crm",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
-    "db:generate": "pnpm --filter @aura/db generate",
-    "db:migrate": "pnpm --filter @aura/db migrate",
-    "db:seed": "pnpm --filter @aura/db seed",
-    "db:studio": "pnpm --filter @aura/db studio"
+    "db:push": "pnpm sync-env && pnpm --filter @aura/db exec drizzle-kit push",
+    "db:generate": "pnpm sync-env && pnpm --filter @aura/db generate",
+    "db:migrate": "pnpm sync-env && pnpm --filter @aura/db migrate",
+    "db:seed": "pnpm sync-env && pnpm --filter @aura/db seed",
+    "db:studio": "pnpm sync-env && pnpm --filter @aura/db studio"
   },
   "devDependencies": {
     "turbo": "^2.3.3",
