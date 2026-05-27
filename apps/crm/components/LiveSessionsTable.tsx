@@ -31,8 +31,8 @@ export function LiveSessionsTable({ initial }: { initial: LiveSessionView[] }) {
 
   if (rows.length === 0) {
     return (
-      <div className="grid place-items-center py-10 text-sm text-[var(--color-fg-muted)]">
-        Sin sesiones activas. Escanea un QR para empezar.
+      <div className="grid place-items-center py-8 text-sm text-[var(--color-fg-muted)]">
+        Sin sesiones activas · escanea un QR para empezar
       </div>
     );
   }
@@ -40,13 +40,13 @@ export function LiveSessionsTable({ initial }: { initial: LiveSessionView[] }) {
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left text-[10px] uppercase tracking-[0.14em] text-[var(--color-fg-muted)]">
-            <Th>Cargador</Th>
-            <Th>Cliente · Vehículo</Th>
-            <Th right>SoC</Th>
-            <Th right>Potencia</Th>
-            <Th right>Energía</Th>
-            <Th right>ETA</Th>
+          <tr className="border-b border-[var(--color-line)] text-left text-[10px] uppercase tracking-[0.12em] text-[var(--color-fg-muted)]">
+            <th className="px-2 py-2">Punto</th>
+            <th className="px-2 py-2">Cliente · Vehículo</th>
+            <th className="px-2 py-2 text-right">SoC</th>
+            <th className="px-2 py-2 text-right">Potencia</th>
+            <th className="px-2 py-2 text-right">Energía</th>
+            <th className="px-2 py-2 text-right">ETA</th>
           </tr>
         </thead>
         <tbody>
@@ -57,40 +57,42 @@ export function LiveSessionsTable({ initial }: { initial: LiveSessionView[] }) {
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="border-t border-[var(--color-line)] last:border-b"
+                className="border-b border-[var(--color-line)] last:border-b-0"
               >
-                <Td>
+                <td className="px-2 py-2.5">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium">{r.chargerCode}</span>
-                    <Badge tone="positive" dot>
-                      live
-                    </Badge>
+                    <span className="font-mono text-[12px]">{r.chargerCode}</span>
+                    {!r.finished && (
+                      <span className="h-1.5 w-1.5 animate-[pulse-glow_1.6s_ease-in-out_infinite] rounded-full bg-[var(--color-positive)]" />
+                    )}
                   </div>
-                </Td>
-                <Td>
+                </td>
+                <td className="px-2 py-2.5">
                   <div className="text-[var(--color-fg)]">
                     {r.customerName ?? <em className="text-[var(--color-fg-muted)]">Anónimo</em>}
                   </div>
                   <div className="text-[11px] text-[var(--color-fg-muted)]">
-                    {r.vehicleModel} · {r.batteryKwh} kWh
+                    {r.vehicleModel}
                   </div>
-                </Td>
-                <Td right>
+                </td>
+                <td className="px-2 py-2.5">
                   <ProgressInline soc={r.socPct} target={r.targetSocPct} />
-                </Td>
-                <Td right tabular>
-                  {r.powerKw.toFixed(1)} <span className="text-xs text-[var(--color-fg-muted)]">kW</span>
-                </Td>
-                <Td right tabular>
-                  {r.kwhDelivered.toFixed(2)} <span className="text-xs text-[var(--color-fg-muted)]">kWh</span>
-                </Td>
-                <Td right tabular>
+                </td>
+                <td className="px-2 py-2.5 text-right tabular">
+                  <span className="font-medium">{r.powerKw.toFixed(1)}</span>
+                  <span className="ml-1 text-[10px] text-[var(--color-fg-muted)]">kW</span>
+                </td>
+                <td className="px-2 py-2.5 text-right tabular">
+                  <span className="font-medium">{r.kwhDelivered.toFixed(1)}</span>
+                  <span className="ml-1 text-[10px] text-[var(--color-fg-muted)]">kWh</span>
+                </td>
+                <td className="px-2 py-2.5 text-right tabular text-[12px]">
                   {r.finished ? (
                     <span className="text-[var(--color-positive)]">listo</span>
                   ) : (
                     formatEta(r.etaRealSec)
                   )}
-                </Td>
+                </td>
               </motion.tr>
             ))}
           </AnimatePresence>
@@ -104,7 +106,7 @@ function ProgressInline({ soc, target }: { soc: number; target: number }) {
   const pct = Math.min(100, Math.max(0, soc));
   return (
     <div className="flex items-center justify-end gap-2">
-      <div className="relative h-1.5 w-24 overflow-hidden rounded-full bg-[var(--color-line)]">
+      <div className="relative h-1.5 w-20 overflow-hidden rounded-full bg-[var(--color-line)]">
         <div
           className="h-full bg-[var(--color-accent)] transition-[width] duration-700"
           style={{ width: `${pct}%` }}
@@ -114,7 +116,7 @@ function ProgressInline({ soc, target }: { soc: number; target: number }) {
           style={{ left: `${target}%` }}
         />
       </div>
-      <span className="tabular w-10 text-right text-xs">{soc.toFixed(0)}%</span>
+      <span className="tabular w-8 text-right text-[12px] font-medium">{soc.toFixed(0)}%</span>
     </div>
   );
 }
@@ -125,28 +127,4 @@ function formatEta(sec: number): string {
   const m = Math.floor(sec / 60);
   const s = sec % 60;
   return `${m}m ${s.toString().padStart(2, "0")}s`;
-}
-
-function Th({ children, right }: { children: React.ReactNode; right?: boolean }) {
-  return <th className={`px-3 py-2 ${right ? "text-right" : "text-left"}`}>{children}</th>;
-}
-
-function Td({
-  children,
-  right,
-  tabular,
-}: {
-  children: React.ReactNode;
-  right?: boolean;
-  tabular?: boolean;
-}) {
-  return (
-    <td
-      className={`px-3 py-3 align-middle ${right ? "text-right" : "text-left"} ${
-        tabular ? "tabular" : ""
-      }`}
-    >
-      {children}
-    </td>
-  );
 }

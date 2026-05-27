@@ -12,10 +12,10 @@ export default function HomePage() {
         <section className="mx-auto grid w-full max-w-[1280px] grid-cols-1 items-center gap-10 px-6 md:grid-cols-12 md:gap-12">
           <div className="md:col-span-7 md:pr-6">
             <Badge tone="accent" dot className="mb-5">
-              Demo Feria · Campus UPM
+              Demo Feria · Campus UPV
             </Badge>
             <h1 className="text-balance text-4xl font-semibold leading-[1.05] tracking-tight sm:text-5xl lg:text-7xl">
-              Cargá tu coche.
+              Carga tu coche.
               <br />
               <span className="text-[var(--color-accent)]">AURA</span> hace el resto.
             </h1>

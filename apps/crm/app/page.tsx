@@ -22,13 +22,13 @@ export default async function OverviewPage() {
   const liveSessions = activeStates.map((s) => liveView(s, now));
 
   return (
-    <div className="mx-auto max-w-[1400px] px-6 py-10">
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <div className="mx-auto max-w-[1400px] px-6 py-6">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <div className="text-[11px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
-            Overview · Last 24h
+          <div className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
+            Overview · últimas 24h
           </div>
-          <h1 className="mt-1 text-3xl font-semibold tracking-tight md:text-5xl">
+          <h1 className="mt-0.5 text-2xl font-semibold tracking-tight md:text-3xl">
             Estado de la red AURA
           </h1>
         </div>
@@ -44,9 +44,9 @@ export default async function OverviewPage() {
 
       <KpiGrid stats={stats} />
 
-      <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-12">
-        <Card className="md:col-span-8">
-          <CardHeader>
+      <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-12">
+        <Card className="p-4 md:col-span-8">
+          <CardHeader className="mb-2">
             <span>Ingresos por día · 14d</span>
             <span className="tabular text-[var(--color-fg)]">
               {sumRevenue(revenue).toFixed(2)} €
@@ -54,8 +54,8 @@ export default async function OverviewPage() {
           </CardHeader>
           <RevenueChart data={revenue} />
         </Card>
-        <Card className="md:col-span-4">
-          <CardHeader>
+        <Card className="p-4 md:col-span-4">
+          <CardHeader className="mb-2">
             <span>Actividad en vivo</span>
             <span className="tabular text-[var(--color-fg)]">tiempo real</span>
           </CardHeader>
@@ -63,20 +63,18 @@ export default async function OverviewPage() {
         </Card>
       </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-12">
-        <Card className="md:col-span-7" raised>
-          <CardHeader>
+      <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-12">
+        <Card className="p-4 md:col-span-7" raised>
+          <CardHeader className="mb-2">
             <span>Sesiones activas</span>
             <span className="tabular">{liveSessions.length}</span>
           </CardHeader>
           <LiveSessionsTable initial={liveSessions} />
         </Card>
-        <Card className="md:col-span-5" raised>
-          <CardHeader>
-            <span>Mapa de cargadores</span>
-            <span className="tabular text-[var(--color-fg)]">
-              {chargers.length} puntos
-            </span>
+        <Card className="p-4 md:col-span-5" raised>
+          <CardHeader className="mb-2">
+            <span>Red de cargadores</span>
+            <span className="tabular text-[var(--color-fg)]">{chargers.length} puntos</span>
           </CardHeader>
           <ChargerGrid chargers={chargers} />
         </Card>

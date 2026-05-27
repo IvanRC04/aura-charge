@@ -18,17 +18,14 @@ export default async function SessionsPage() {
     .limit(120);
 
   return (
-    <div className="mx-auto max-w-[1400px] px-6 py-10">
-      <div className="mb-6">
-        <div className="text-[11px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
-          Histórico
+    <div className="mx-auto max-w-[1400px] px-6 py-6">
+      <div className="mb-5">
+        <div className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
+          Histórico · últimas 120
         </div>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight md:text-5xl">
+        <h1 className="mt-0.5 text-2xl font-semibold tracking-tight md:text-3xl">
           Sesiones de carga
         </h1>
-        <p className="mt-1 text-sm text-[var(--color-fg-muted)]">
-          Últimas 120 sesiones registradas en la red.
-        </p>
       </div>
       <Card className="overflow-hidden p-0">
         <div className="overflow-x-auto">

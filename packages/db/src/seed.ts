@@ -24,7 +24,7 @@ const CHARGER_SEED: ChargerSeed[] = [
   { code: "AURA-004", name: "Barcelona Diagonal", location: "Barcelona, Eixample", type: "public", maxPowerKw: 350 },
   { code: "AURA-005", name: "Barcelona Diagonal", location: "Barcelona, Eixample", type: "public", maxPowerKw: 150 },
   { code: "AURA-006", name: "Valencia Puerto", location: "Valencia, Grao", type: "public", maxPowerKw: 50 },
-  { code: "AURA-007", name: "Demo Feria Universitaria", location: "Campus UPM", type: "public", maxPowerKw: 150 },
+  { code: "AURA-007", name: "Demo Feria Universitaria", location: "Campus UPV", type: "public", maxPowerKw: 150 },
   { code: "AURA-008", name: "Sevilla Sur", location: "Sevilla, Los Remedios", type: "public", maxPowerKw: 50 },
   { code: "AURA-P01", name: "Garaje Privado · Acme SL", location: "Madrid, Pozuelo", type: "private", maxPowerKw: 22 },
   { code: "AURA-P02", name: "Casa · López", location: "Madrid, Las Rozas", type: "private", maxPowerKw: 11 },

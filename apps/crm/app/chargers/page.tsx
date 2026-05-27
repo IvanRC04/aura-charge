@@ -20,20 +20,20 @@ export default async function ChargersPage() {
   const usageById = new Map(usage.map((u) => [u.chargerId, u]));
 
   return (
-    <div className="mx-auto max-w-[1400px] px-6 py-10">
-      <div className="mb-6">
-        <div className="text-[11px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
-          Red
+    <div className="mx-auto max-w-[1400px] px-6 py-6">
+      <div className="mb-5">
+        <div className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
+          Red · {chargers.length} puntos
         </div>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight md:text-5xl">
+        <h1 className="mt-0.5 text-2xl font-semibold tracking-tight md:text-3xl">
           Cargadores AURA
         </h1>
       </div>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
         {chargers.map((c) => {
           const u = usageById.get(c.id);
           return (
-            <Card key={c.id} raised>
+            <Card key={c.id} raised className="p-4">
               <CardHeader>
                 <span className="font-mono text-[12px] tracking-[0.04em]">{c.code}</span>
                 <Badge

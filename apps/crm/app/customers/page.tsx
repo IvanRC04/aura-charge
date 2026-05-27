@@ -21,12 +21,12 @@ export default async function CustomersPage() {
     .orderBy(desc(sql`sum(${schema.sessions.costEur})`));
 
   return (
-    <div className="mx-auto max-w-[1400px] px-6 py-10">
-      <div className="mb-6">
-        <div className="text-[11px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
-          CRM · Clientes
+    <div className="mx-auto max-w-[1400px] px-6 py-6">
+      <div className="mb-5">
+        <div className="text-[10px] uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
+          CRM · clientes
         </div>
-        <h1 className="mt-1 text-3xl font-semibold tracking-tight md:text-5xl">
+        <h1 className="mt-0.5 text-2xl font-semibold tracking-tight md:text-3xl">
           Clientes y consumo
         </h1>
       </div>
