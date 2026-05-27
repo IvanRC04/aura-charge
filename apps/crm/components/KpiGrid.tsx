@@ -17,19 +17,19 @@ export function KpiGrid({ stats }: { stats: Stats }) {
       accent: true,
     },
     {
-      label: "kWh entregados hoy",
+      label: "kWh entregados · 24h",
       value: Number(stats.today.kwhTotal).toFixed(1),
       unit: "kWh",
       hint: `${stats.today.sessionsCount} sesiones`,
     },
     {
-      label: "Ingresos hoy",
+      label: "Ingresos · 24h",
       value: Number(stats.today.revenueEur).toFixed(2),
       unit: "€",
-      hint: "neto",
+      hint: "operación red",
     },
     {
-      label: "Visitas QR hoy",
+      label: "Visitas QR · 24h",
       value: String(stats.visitsToday),
       hint: "escaneos únicos",
     },

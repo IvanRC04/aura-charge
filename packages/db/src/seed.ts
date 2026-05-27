@@ -144,8 +144,10 @@ async function main() {
     const customer = pick(customerRows);
     const chargerSeed = pick(CHARGER_SEED.filter((c) => c.code !== "AURA-007")); // Reserve AURA-007 for live demo
     const chargerRow = chargersByCode.get(chargerSeed.code)!;
-    const daysAgo = Math.random() * 14;
-    const startedAt = new Date(now - daysAgo * 24 * 3600 * 1000 - Math.random() * 12 * 3600 * 1000);
+    // Skew toward recent: most sessions in the last 24-48h, tail extends to 7 days.
+    // Pow with exponent > 1 pushes the distribution toward 0 (recent).
+    const skewedDays = Math.pow(Math.random(), 1.8) * 7;
+    const startedAt = new Date(now - skewedDays * 24 * 3600 * 1000 - Math.random() * 6 * 3600 * 1000);
     const sim = buildHistoricalSession(chargerSeed, customer, startedAt);
 
     const sessionId = crypto.randomUUID();

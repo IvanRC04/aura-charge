@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function OverviewPage() {
-  const [stats, chargers, activeStates, revenue] = await Promise.all([
+  const [statsBase, chargers, activeStates, revenue] = await Promise.all([
     getOverviewStats(),
     getAllChargers(),
     getAllActiveStates(),
@@ -20,6 +20,21 @@ export default async function OverviewPage() {
   ]);
   const now = Date.now();
   const liveSessions = activeStates.map((s) => liveView(s, now));
+
+  // Augment the KPI numbers with current in-progress values so the dashboard
+  // reflects what's literally on screen in the live table.
+  const liveKwh = liveSessions.reduce((acc, s) => acc + s.kwhDelivered, 0);
+  const liveCost = liveSessions.reduce((acc, s) => acc + s.costEur, 0);
+  const stats = {
+    ...statsBase,
+    today: {
+      sessionsCount: statsBase.today.sessionsCount + liveSessions.length,
+      kwhTotal: (Number(statsBase.today.kwhTotal) + liveKwh).toFixed(3),
+      revenueEur: (Number(statsBase.today.revenueEur) + liveCost).toFixed(2),
+    },
+    // Trust Redis active set over the DB sessions.status column (DB can lag by 1 tick)
+    activeSessions: Math.max(statsBase.activeSessions, liveSessions.length),
+  };
 
   return (
     <div className="mx-auto max-w-[1400px] px-6 py-6">

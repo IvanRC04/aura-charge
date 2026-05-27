@@ -59,27 +59,27 @@ export async function getAllCustomers() {
 }
 
 export async function getOverviewStats() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  // Rolling 24h window — more honest than midnight-to-now for a demo running mid-day
+  const since = new Date(Date.now() - 24 * 3600 * 1000);
 
-  const [todayStats] = await db
+  const [last24Stats] = await db
     .select({
       sessionsCount: sql<number>`count(*)::int`,
       kwhTotal: sql<string>`coalesce(sum(${sessions.kwhDelivered}), 0)::text`,
       revenueEur: sql<string>`coalesce(sum(${sessions.costEur}), 0)::text`,
     })
     .from(sessions)
-    .where(gte(sessions.startedAt, today));
+    .where(gte(sessions.startedAt, since));
 
   const [activeCount] = await db
     .select({ n: sql<number>`count(*)::int` })
     .from(sessions)
     .where(eq(sessions.status, "active"));
 
-  const [visitsToday] = await db
+  const [visitsLast24] = await db
     .select({ n: sql<number>`count(*)::int` })
     .from(visits)
-    .where(gte(visits.ts, today));
+    .where(gte(visits.ts, since));
 
   const [chargerStats] = await db
     .select({
@@ -91,9 +91,9 @@ export async function getOverviewStats() {
     .from(chargers);
 
   return {
-    today: todayStats ?? { sessionsCount: 0, kwhTotal: "0", revenueEur: "0" },
+    today: last24Stats ?? { sessionsCount: 0, kwhTotal: "0", revenueEur: "0" },
     activeSessions: activeCount?.n ?? 0,
-    visitsToday: visitsToday?.n ?? 0,
+    visitsToday: visitsLast24?.n ?? 0,
     chargers: chargerStats ?? { total: 0, charging: 0, idle: 0, error: 0 },
   };
 }
