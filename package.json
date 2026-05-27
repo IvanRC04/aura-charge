@@ -1,0 +1,26 @@
+{
+  "name": "aura-charge",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.18.3",
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "dev:web": "turbo run dev --filter=web",
+    "dev:crm": "turbo run dev --filter=crm",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "db:generate": "pnpm --filter @aura/db generate",
+    "db:migrate": "pnpm --filter @aura/db migrate",
+    "db:seed": "pnpm --filter @aura/db seed",
+    "db:studio": "pnpm --filter @aura/db studio"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2",
+    "@types/node": "^22.10.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
